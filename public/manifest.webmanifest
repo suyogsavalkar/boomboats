@@ -1,0 +1,9 @@
+{
+  "name": "Boomboats",
+  "short_name": "Boomboats",
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#071d31",
+  "theme_color": "#071d31"
+}

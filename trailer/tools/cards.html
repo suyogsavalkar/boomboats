@@ -1,0 +1,34 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;width:1920px;height:1080px;background:transparent;overflow:hidden;font-family:'Nunito',sans-serif}
+.card{position:absolute;inset:0;display:none!important}.card.show{display:flex!important}
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.logo{font-family:'Lilita One';font-size:250px;line-height:.9;color:#ffcf33;letter-spacing:4px;transform:rotate(-3deg);
+ text-shadow:0 10px 0 #c46a00,0 20px 0 #7a3300,0 30px 60px rgba(0,0,0,.55)}
+.logo span{color:#ff5a2c;text-shadow:0 10px 0 #a52a0c,0 20px 0 #5c1203,0 30px 60px rgba(0,0,0,.55)}
+.cap{font-family:'Lilita One';font-size:150px;color:#fff;letter-spacing:3px;transform:rotate(-2deg);
+ text-shadow:0 8px 0 #0b4f7a,0 16px 0 #062a45,0 24px 50px rgba(0,0,0,.6)}
+.cap em{font-style:normal;color:#ffcf33}
+.sub{margin-top:34px;font-weight:900;font-size:52px;color:#fff;background:rgba(6,42,69,.78);padding:10px 34px;border-radius:999px;transform:rotate(-2deg);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.lower{position:absolute;left:90px;bottom:110px;display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+.tier{font-weight:900;font-size:34px;letter-spacing:4px;padding:6px 22px;border-radius:12px;color:#10243a;text-transform:uppercase}
+.wname{font-family:'Lilita One';font-size:118px;line-height:1;color:#fff;text-shadow:0 7px 0 #062a45,0 14px 40px rgba(0,0,0,.6)}
+.end .tag{margin-top:70px;font-family:'Lilita One';font-size:84px;color:#fff;text-shadow:0 6px 0 #062a45,0 12px 40px rgba(0,0,0,.6)}
+.end .sub2{margin-top:22px;font-weight:900;font-size:40px;color:#d8ecff;text-shadow:0 3px 12px rgba(0,0,0,.7)}
+.credits{position:absolute;bottom:34px;left:0;right:0;text-align:center;font-weight:800;font-size:22px;color:rgba(255,255,255,.82);text-shadow:0 2px 6px rgba(0,0,0,.8)}
+</style></head><body>
+<div class="card center" id="logo"><div class="logo">BOOM<span>BOATS</span></div></div>
+<div class="card center" id="c_throttle"><div class="cap">FULL <em>THROTTLE</em></div></div>
+<div class="card center" id="c_loot"><div class="cap">GRAB THE <em>LOOT</em></div></div>
+<div class="card center" id="c_smash"><div class="cap">SMASH YOUR <em>FRIENDS</em></div></div>
+<div class="card center" id="c_players"><div class="cap">UP TO <em>8</em> PLAYERS</div><div class="sub">Invite friends with one link</div></div>
+<div class="card center" id="c_boats"><div class="cap"><em>10</em> BOATS · <em>19</em> DRIVERS</div></div>
+<div class="card end center" id="end"><div class="logo">BOOM<span>BOATS</span></div><div class="tag">PLAY FREE IN YOUR BROWSER</div><div class="sub2">Online multiplayer · Desktop &amp; phone</div>
+ <div class="credits">Music “Awake! (Megawall-10)” by cynicmusic (CC0) · Explosion sounds by qubodup (Iwan Gabovitch), CC-BY 3.0 · 3D models by Kenney.nl (CC0)</div></div>
+<div class="card" id="w"><div class="lower"><div class="tier" id="tier"></div><div class="wname" id="wname"></div></div></div>
+<script>
+const p=new URLSearchParams(location.search), id=p.get('id');
+document.getElementById(id).classList.add('show');
+if(id==='w'){document.getElementById('wname').textContent=p.get('name');const t=document.getElementById('tier');t.textContent=p.get('tier');t.style.background=p.get('color');}
+</script></body></html>

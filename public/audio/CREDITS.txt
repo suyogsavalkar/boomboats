@@ -1,0 +1,63 @@
+Boomboats - audio credits
+=========================
+
+All sounds below are real recordings (or edits of real recordings), trimmed,
+mixed to mono, loudness-matched and re-encoded (.ogg Vorbis + .mp3) for the game.
+Loops were made seamless with a short equal-power crossfade of the recording onto itself.
+(The "kenney/" subfolder was already here and is not covered by this file.)
+
+engine_loop.ogg / .mp3  (5.0 s loop)
+  Source:  "8 Quai Napoléon, 20000 Ajaccio, France - Motor Boat" (radio aporee field recording, Zoom H6)
+           https://archive.org/details/aporee_57817_66187
+  Author:  kaoss012
+  License: Public Domain Mark 1.0 (https://creativecommons.org/publicdomain/mark/1.0/)
+  Edit:    45.0-50.5 s section, 35 Hz high-pass, looped
+
+waves_loop.ogg / .mp3  (15.0 s loop)
+  Source:  "Frederiksvej 16, 3730 Nexø, Denmark - Small waves" (radio aporee, Sony PCM-D100)
+           https://archive.org/details/aporee_41291_47108
+  Author:  Benjamin Trimoreau
+  License: Public Domain Mark 1.0
+  Edit:    2-18 s section, looped
+
+explosion_1.ogg / .mp3  (2.1 s)   ["qubodup-BangLong"]
+explosion_2.ogg / .mp3  (1.5 s)   ["qubodup-BangMid"]
+  Source:  "3 Background Crash Explosion Bang Sounds" - mixed from the author's own recording of
+           New Year's firecracker explosions
+           https://opengameart.org/content/3-background-crash-explosion-bang-sounds
+  Author:  qubodup (Iwan Gabovitch)
+  License: CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)  [also offered under GPL 2.0/3.0]
+  Attribution required: "Explosion sounds by qubodup (Iwan Gabovitch), CC-BY 3.0"
+
+splash.ogg / .mp3  (1.45 s)       ["Splash.wav"]
+water_explosion.ogg / .mp3 (2.45 s, bonus - e.g. mine/rocket hitting water) ["WaterSurfaceExplosion01.wav"]
+  Source:  "Tiny Naval Battle Sounds Set" - made from US military and public-domain recordings
+           https://opengameart.org/content/tiny-naval-battle-sounds-set
+  Author:  qubodup (Iwan Gabovitch)
+  License: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+
+rocket_launch.ogg / .mp3  (1.1 s) ["fw_02.ogg" - firework rocket launch]
+  Source:  "25 CC0 bang / firework SFX" - author's recordings of fireworks
+           https://opengameart.org/content/25-cc0-bang-firework-sfx
+  Author:  rubberduck
+  License: CC0 1.0
+
+gun_burst.ogg / .mp3  (0.9 s)
+  Source:  ".50 Caliber Machine Gun" (DVIDS / U.S. military recording)
+           https://archive.org/details/50CaliberMachineGun
+  Author:  Digital Video and Imagery Distribution System (U.S. Government work)
+  License: Public Domain
+  Edit:    one 7-round burst, 25.12-26.02 s
+
+horn.ogg / .mp3  (1.9 s)
+  Source:  "Cruise ship Albatros ship horn" (Bremerhaven)
+           https://commons.wikimedia.org/wiki/File:Cruise_ship_Albatros_ship_horn.ogg
+  Author:  Tvabutzku1234
+  License: CC0 1.0
+  Edit:    start of the 2nd blast, 70 Hz high-pass, faded out
+
+music_loop.ogg / .mp3  (57.3 s, stereo, loops seamlessly)
+  Title:   "Awake! (Megawall-10)"
+  Source:  https://opengameart.org/content/awake-megawall-10
+  Author:  cynicmusic (cynicmusic.com / pixelsphere.org)
+  License: CC0 1.0

@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Boomboats Admin</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%93%8A%3C/text%3E%3C/svg%3E" />
+  <style>
+    :root {
+      color-scheme: light;
+      --page: #f4f3f0; --surface-1: #fcfcfb; --surface-2: #f0efec; --border: #e2e0db;
+      --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #77756f;
+      --series-1: #2a78d6; --series-2: #eb6834; --grid: #e7e5e0; --accent: #2a78d6;
+      --good: #0ca30c; --critical: #d03b3b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --page: #121211; --surface-1: #1a1a19; --surface-2: #232321; --border: #30302d;
+        --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #8f8d85;
+        --series-1: #3987e5; --series-2: #d95926; --grid: #2c2c29; --accent: #3987e5;
+      }
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --page: #121211; --surface-1: #1a1a19; --surface-2: #232321; --border: #30302d;
+      --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #8f8d85;
+      --series-1: #3987e5; --series-2: #d95926; --grid: #2c2c29; --accent: #3987e5;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--page); color: var(--text-primary); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 20px 16px 48px; }
+    header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    h1 { font-size: 20px; margin: 0; }
+    h1 small { color: var(--text-muted); font-weight: 500; font-size: 13px; margin-left: 6px; }
+    h2 { font-size: 15px; margin: 0 0 2px; }
+    .sub { color: var(--text-secondary); font-size: 12.5px; margin: 0 0 12px; }
+    .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 2px; }
+    .seg button { border: 0; background: transparent; color: var(--text-secondary); padding: 6px 12px; border-radius: 8px; cursor: pointer; font: inherit; }
+    .seg button[aria-pressed="true"] { background: var(--surface-1); color: var(--text-primary); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+    .btn { border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary); padding: 6px 12px; border-radius: 10px; cursor: pointer; font: inherit; }
+    .btn.forget { padding: 2px 8px; font-size: 12px; color: var(--text-secondary); }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .muted { color: var(--text-muted); }
+    .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+    .grid { display: grid; gap: 12px; }
+    .tiles { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); margin-bottom: 12px; }
+    .tile .k { color: var(--text-secondary); font-size: 12.5px; }
+    .tile .v { font-size: 28px; font-weight: 650; letter-spacing: -.02em; margin-top: 2px; font-variant-numeric: tabular-nums; }
+    .tile .h { color: var(--text-muted); font-size: 12px; }
+    .two { grid-template-columns: 1fr 1fr; }
+    .three { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 860px) { .two, .three { grid-template-columns: 1fr; } }
+    section { margin-top: 12px; }
+    .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--text-secondary); margin-bottom: 6px; }
+    .legend i { display: inline-block; width: 12px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+    .chart { position: relative; width: 100%; }
+    .chart svg { display: block; width: 100%; overflow: visible; }
+    .chart text { fill: var(--text-muted); font-size: 11px; }
+    .tip { position: fixed; pointer-events: none; background: var(--surface-1); color: var(--text-primary); border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; font-size: 12.5px; box-shadow: 0 6px 20px rgba(0,0,0,.18); z-index: 10; min-width: 140px; display: none; }
+    .tip b { display: block; margin-bottom: 4px; }
+    .tip .row { display: flex; justify-content: space-between; gap: 14px; }
+    .tip .sw { display: inline-block; width: 10px; height: 3px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+    .bars { display: flex; flex-direction: column; gap: 8px; }
+    .bar-row { display: grid; grid-template-columns: minmax(110px, 38%) 1fr auto; gap: 10px; align-items: center; font-size: 13px; }
+    .bar-row .lab { color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bar-track { height: 14px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--series-1); border-radius: 0 4px 4px 0; min-width: 2px; }
+    .bar-row .num { font-variant-numeric: tabular-nums; color: var(--text-primary); min-width: 64px; text-align: right; }
+    .bar-row .num span { color: var(--text-muted); margin-left: 4px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; color: var(--text-muted); font-weight: 600; font-size: 12px; padding: 6px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    td { padding: 7px 8px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+    td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+    .scroll { overflow-x: auto; max-height: 460px; overflow-y: auto; }
+    .pill { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 12px; background: var(--surface-2); color: var(--text-secondary); border: 1px solid var(--border); }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; }
+    .live-room { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; padding: 8px 0; border-bottom: 1px solid var(--grid); }
+    .live-room:last-child { border-bottom: 0; }
+    .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--good); margin-right: 6px; }
+    .login { max-width: 380px; margin: 12vh auto; }
+    .login input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-primary); font: inherit; margin: 10px 0; }
+    .err { color: var(--critical); font-size: 13px; min-height: 1.2em; }
+    details summary { cursor: pointer; color: var(--text-secondary); font-size: 12.5px; margin-top: 8px; }
+    .empty { color: var(--text-muted); padding: 18px 0; text-align: center; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="login" class="card login hidden">
+      <h1>Boomboats admin</h1>
+      <p class="sub">Enter your admin key to see the game's stats.</p>
+      <form id="login-form">
+        <input id="key" type="password" autocomplete="current-password" placeholder="Admin key" />
+        <div id="login-err" class="err"></div>
+        <button class="btn primary" type="submit">Open dashboard</button>
+      </form>
+    </div>
+
+    <div id="app" class="hidden">
+      <header>
+        <h1>Boomboats analytics <small id="updated"></small></h1>
+        <div class="controls">
+          <div class="seg" id="range" role="group" aria-label="Time range">
+            <button data-days="1">24 h</button><button data-days="7">7 days</button><button data-days="30" aria-pressed="true">30 days</button><button data-days="90">90 days</button>
+          </div>
+          <button class="btn" id="refresh">Refresh</button>
+          <button class="btn" id="signout">Sign out</button>
+        </div>
+      </header>
+
+      <div class="card" id="live-card">
+        <h2><span class="dot"></span>Playing right now</h2>
+        <div id="live"></div>
+      </div>
+
+      <section class="grid tiles" id="tiles"></section>
+
+      <section class="grid two">
+        <div class="card">
+          <h2>Unique users and players per day</h2>
+          <p class="sub">Unique users by IP address vs. browsers that joined a match</p>
+          <div class="legend"><span><i style="background:var(--series-1)"></i>Unique users (IP)</span><span><i style="background:var(--series-2)"></i>Played</span></div>
+          <div class="chart" id="chart-daily"></div>
+          <details><summary>Show as table</summary><div class="scroll"><table id="daily-table"></table></div></details>
+        </div>
+        <div class="card">
+          <h2>Minutes played per day</h2>
+          <p class="sub">Total time all players spent in matches</p>
+          <div class="chart" id="chart-minutes"></div>
+        </div>
+      </section>
+
+      <section class="grid two">
+        <div class="card">
+          <h2>From visit to inviting friends</h2>
+          <p class="sub">How many people reach each step (share of everyone who opened the game)</p>
+          <div class="bars" id="funnel"></div>
+        </div>
+        <div class="card">
+          <h2>Do players come back?</h2>
+          <p class="sub">Grouped by the day they first played. Next day = played again the day after; within 7 days = any day in the next week.</p>
+          <div class="scroll"><table id="retention"></table></div>
+        </div>
+      </section>
+
+      <section class="grid three">
+        <div class="card"><h2>How people join</h2><p class="sub">Matches joined</p><div class="bars" id="modes"></div></div>
+        <div class="card"><h2>Devices</h2><p class="sub">Visitors</p><div class="bars" id="devices"></div></div>
+        <div class="card"><h2>Countries</h2><p class="sub">Visitors</p><div class="bars" id="countries"></div></div>
+      </section>
+
+      <section class="card">
+        <h2>Recent players</h2>
+        <p class="sub">Every match someone joined, newest first</p>
+        <div class="scroll"><table id="recent"></table></div>
+      </section>
+
+      <section class="card">
+        <h2>Names people played as</h2>
+        <p class="sub">Most-used names first</p>
+        <div class="scroll"><table id="names"></table></div>
+      </section>
+    </div>
+  </div>
+  <div class="tip" id="tip"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const store = { get: (k) => { try { return localStorage.getItem(k) || ''; } catch { return ''; } }, set: (k, v) => { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch {} } };
+const fmt = (n) => Number(n || 0).toLocaleString();
+const dur = (s) => { s = Math.round(s || 0); if (s < 60) return `${s}s`; const m = Math.floor(s / 60); if (m < 60) return `${m}m ${s % 60}s`; return `${Math.floor(m / 60)}h ${m % 60}m`; };
+const ago = (ts) => { const s = (Date.now() - ts) / 1000; if (s < 60) return 'just now'; if (s < 3600) return `${Math.floor(s / 60)} min ago`; if (s < 86400) return `${Math.floor(s / 3600)} h ago`; return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); };
+const shortDay = (d) => new Date(d + 'T00:00:00Z').toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' });
+const MODE = { quick: 'Quick play', create: 'Created a room', link: 'Invite link', code: 'Typed a room code' };
+const FLAG = (c) => (c && /^[A-Z]{2}$/.test(c) ? String.fromCodePoint(...[...c].map((ch) => 127397 + ch.charCodeAt(0))) + ' ' + c : '—');
+
+let days = 30, data = null, timer = null;
+
+// ---------- auth
+function showLogin(msg) { $('app').classList.add('hidden'); $('login').classList.remove('hidden'); $('login-err').textContent = msg || ''; $('key').focus(); }
+$('login-form').onsubmit = (e) => { e.preventDefault(); store.set('bb-admin-key', $('key').value.trim()); load(); };
+$('signout').onclick = () => { store.set('bb-admin-key', ''); clearInterval(timer); showLogin('Signed out.'); };
+$('refresh').onclick = () => load();
+for (const b of $('range').querySelectorAll('button')) b.onclick = () => {
+  days = Number(b.dataset.days);
+  for (const x of $('range').querySelectorAll('button')) x.setAttribute('aria-pressed', x === b);
+  load();
+};
+
+async function load() {
+  const key = store.get('bb-admin-key');
+  if (!key) return showLogin();
+  try {
+    const r = await fetch(`/admin/api/summary?days=${days}`, { headers: { authorization: `Bearer ${key}` }, cache: 'no-store' });
+    if (r.status === 401) { store.set('bb-admin-key', ''); return showLogin('That key is not right.'); }
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `Server said ${r.status}`);
+    data = await r.json();
+    $('login').classList.add('hidden'); $('app').classList.remove('hidden');
+    render();
+    clearInterval(timer); timer = setInterval(load, 30000);
+  } catch (err) { showLogin(`Couldn't load stats: ${err.message}`); }
+}
+
+// ---------- render
+function render() {
+  const t = data.totals;
+  $('updated').textContent = `updated ${new Date(data.generatedAt).toLocaleTimeString()} · refreshes every 30 s`;
+  const range = days === 1 ? 'last 24 hours' : `last ${days} days`;
+  const tiles = [
+    ['Unique users', fmt(t.uniqueUsers), `by IP address · ${fmt(t.allTimeUniqueUsers)} ever`],
+    ['Opened the game', fmt(t.visitors), `browsers · ${fmt(t.visits)} visits · ${range}`],
+    ['Played', fmt(t.players), `browsers · ${fmt(t.uniquePlayers)} by IP · ${fmt(t.sessions)} matches`],
+    ['Private rooms created', fmt(t.roomsCreated), `${fmt(t.friendJoins)} joins by code or link`],
+    ['Average time in a room', dur(t.avgSessionSeconds), 'from joining a room to leaving'],
+    ['Total time played', dur(t.playSeconds), 'all players together'],
+    ['Came back another day', fmt(t.returningPlayers), `${t.allTimePlayers ? Math.round(100 * t.returningPlayers / t.allTimePlayers) : 0}% of ${fmt(t.allTimePlayers)} players ever`],
+  ];
+  $('tiles').innerHTML = tiles.map(([k, v, h]) => `<div class="card tile"><div class="k">${k}</div><div class="v">${v}</div><div class="h">${h}</div></div>`).join('');
+
+  // live
+  const rooms = (data.live || []).filter((r) => r.people.length);
+  $('live').innerHTML = rooms.length ? rooms.map((r) => `<div class="live-room"><b>Room ${esc(r.code)}</b><span class="pill">${r.public ? 'Public' : 'Private'}</span>
+      <span class="muted">${r.state === 'playing' ? `${Math.floor(r.secondsLeft / 60)}:${String(r.secondsLeft % 60).padStart(2, '0')} left` : 'showing results'} · ${r.bots} bots</span>
+      <span>${r.people.map((p) => `${esc(p.name)} <span class="muted">(${p.score} sinks, ${p.minutes} min)</span>`).join(', ')}</span></div>`).join('')
+    : '<div class="empty">Nobody is playing right now.</div>';
+
+  lineChart($('chart-daily'), data.daily, [{ key: 'users', label: 'Unique users (IP)', color: 'var(--series-1)' }, { key: 'players', label: 'Played', color: 'var(--series-2)' }]);
+  barChart($('chart-minutes'), data.daily, 'minutes', 'minutes played');
+  $('daily-table').innerHTML = `<tr><th>Day</th><th class="n">Unique users (IP)</th><th class="n">Browsers opened</th><th class="n">Played</th><th class="n">Rooms created</th><th class="n">Minutes</th></tr>` +
+    [...data.daily].reverse().map((d) => `<tr><td>${shortDay(d.day)}</td><td class="n">${d.users}</td><td class="n">${d.visitors}</td><td class="n">${d.players}</td><td class="n">${d.rooms}</td><td class="n">${d.minutes}</td></tr>`).join('');
+
+  // funnel
+  const top = data.funnel[0]?.n || 0;
+  $('funnel').innerHTML = data.funnel.map((f) => barRow(f.step, f.n, top, top ? `${Math.round(100 * f.n / top)}%` : '')).join('');
+
+  // retention
+  const pct = (a, b) => (b ? Math.round(100 * a / b) : 0);
+  const cell = (n, size, known) => {
+    if (!known) return '<td class="n muted">—</td>';
+    const p = pct(n, size);
+    return `<td class="n" style="background:color-mix(in srgb, var(--series-1) ${Math.round(p * 0.7)}%, transparent)" title="${n} of ${size}">${p}%</td>`;
+  };
+  $('retention').innerHTML = data.retention.length ? `<tr><th>First played</th><th class="n">Players</th><th class="n">Next day</th><th class="n">Within 7 days</th><th class="n">Ever came back</th></tr>` +
+    data.retention.map((c) => `<tr><td>${shortDay(c.day)}</td><td class="n">${c.size}</td>${cell(c.d1, c.size, c.age >= 1)}${cell(c.d7, c.size, c.age >= 1)}${cell(c.any, c.size, c.age >= 1)}</tr>`).join('')
+    : '<tr><td class="empty">No players yet.</td></tr>';
+
+  const list = (rows, label) => { const max = Math.max(1, ...rows.map((r) => r.n)); return rows.length ? rows.map((r) => barRow(label(r.k), r.n, max, '')).join('') : '<div class="empty">No data yet.</div>'; };
+  $('modes').innerHTML = list(data.joinModes, (k) => MODE[k] || k);
+  $('devices').innerHTML = list(data.devices, (k) => ({ mobile: 'Phone / tablet', desktop: 'Computer' }[k] || 'Unknown'));
+  $('countries').innerHTML = list(data.countries, FLAG);
+
+  $('recent').innerHTML = data.recent.length ? `<tr><th>When</th><th>Name</th><th>How they joined</th><th>Room</th><th>Device</th><th>Country</th><th title="Same code = same IP address (shown scrambled)">Network</th><th class="n">Time played</th><th class="n">Sinks</th><th class="n">Sunk</th></tr>` +
+    data.recent.map((r) => `<tr><td title="${new Date(r.ts).toLocaleString()}">${ago(r.ts)}</td><td><b>${esc(r.name)}</b></td><td>${MODE[r.mode] || esc(r.mode)}</td><td>${esc(r.room)}</td>
+      <td>${r.device === 'mobile' ? 'Phone' : 'Computer'}</td><td>${FLAG(r.country)}</td><td><span class="pill mono" title="Same code = same IP address">${r.ip ? esc(r.ip.slice(0, 6)) : '—'}</span></td><td class="n">${r.secs == null ? '<span class="muted">playing / unknown</span>' : dur(r.secs)}</td>
+      <td class="n">${r.score ?? '—'}</td><td class="n">${r.deaths ?? '—'}</td></tr>`).join('')
+    : '<tr><td class="empty">Nobody has played in this period.</td></tr>';
+
+  $('names').innerHTML = data.names.length ? `<tr><th>Name</th><th class="n">Matches joined</th><th class="n">Browsers</th><th class="n">IP addresses</th><th class="n">Time played</th><th class="n">Sinks</th><th>Last seen</th><th></th></tr>` +
+    data.names.map((n) => `<tr><td><b>${esc(n.name)}</b></td><td class="n">${n.sessions}</td><td class="n">${n.people}</td><td class="n">${n.networks}</td><td class="n">${dur(n.secs)}</td><td class="n">${n.sinks}</td><td>${ago(n.last)}</td><td><button class="btn forget" data-name="${esc(n.name)}" title="Delete everything recorded under this name">Remove</button></td></tr>`).join('')
+    : '<tr><td class="empty">No names yet.</td></tr>';
+}
+
+document.addEventListener('click', async (e) => {
+  const b = e.target.closest('.forget');
+  if (!b) return;
+  const name = b.dataset.name;
+  if (!confirm(`Delete everything recorded under "${name}"? This can't be undone.`)) return;
+  const r = await fetch(`/admin/api/forget?name=${encodeURIComponent(name)}`, { method: 'POST', headers: { authorization: `Bearer ${store.get('bb-admin-key')}` } });
+  if (r.ok) load(); else alert('Could not delete it.');
+});
+
+function barRow(label, n, max, extra) {
+  const w = max ? Math.max(0.5, (100 * n) / max) : 0;
+  return `<div class="bar-row"><div class="lab" title="${esc(label)}">${esc(label)}</div><div class="bar-track"><div class="bar-fill" style="width:${w}%"></div></div><div class="num">${fmt(n)}${extra ? `<span>${extra}</span>` : ''}</div></div>`;
+}
+
+// ---------- charts (plain SVG)
+const tip = $('tip');
+function showTip(html, x, y) {
+  tip.innerHTML = html; tip.style.display = 'block';
+  const r = tip.getBoundingClientRect();
+  tip.style.left = `${Math.min(innerWidth - r.width - 8, x + 14)}px`;
+  tip.style.top = `${Math.max(8, y - r.height - 10)}px`;
+}
+const hideTip = () => { tip.style.display = 'none'; };
+const niceMax = (v) => { if (v <= 4) return 4; const p = 10 ** Math.floor(Math.log10(v)); const m = v / p; return (m <= 2 ? 2 : m <= 5 ? 5 : 10) * p; };
+const NS = 'http://www.w3.org/2000/svg';
+
+function frame(el, rows, max, H) {
+  const W = Math.max(280, el.clientWidth), m = { l: 34, r: 12, t: 10, b: 24 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img">`;
+  for (let i = 0; i <= 4; i++) {
+    const y = m.t + ih - (ih * i) / 4;
+    svg += `<line x1="${m.l}" x2="${W - m.r}" y1="${y}" y2="${y}" stroke="var(--grid)" stroke-width="1"/>`;
+    svg += `<text x="${m.l - 6}" y="${y + 4}" text-anchor="end">${fmt(Math.round((max * i) / 4 * 10) / 10)}</text>`;
+  }
+  const step = Math.max(1, Math.ceil(rows.length / Math.max(2, Math.floor(iw / 70))));
+  rows.forEach((r, i) => {
+    if (i % step && i !== rows.length - 1) return;
+    const x = m.l + (rows.length === 1 ? iw / 2 : (iw * i) / (rows.length - 1));
+    svg += `<text x="${x}" y="${H - 6}" text-anchor="middle">${shortDay(r.day)}</text>`;
+  });
+  return { W, m, iw, ih, svg };
+}
+
+function lineChart(el, rows, series) {
+  const H = 230;
+  const max = niceMax(Math.max(1, ...rows.flatMap((r) => series.map((s) => r[s.key]))));
+  const f = frame(el, rows, max, H);
+  const X = (i) => f.m.l + (rows.length === 1 ? f.iw / 2 : (f.iw * i) / (rows.length - 1));
+  const Y = (v) => f.m.t + f.ih - (f.ih * v) / max;
+  let svg = f.svg;
+  for (const s of series) {
+    const d = rows.map((r, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(r[s.key]).toFixed(1)}`).join('');
+    svg += `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    const li = rows.length - 1;
+    svg += `<circle cx="${X(li)}" cy="${Y(rows[li][s.key])}" r="4" fill="${s.color}" stroke="var(--surface-1)" stroke-width="2"/>`;
+  }
+  svg += `<line id="xh" x1="0" x2="0" y1="${f.m.t}" y2="${f.m.t + f.ih}" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="3 3" visibility="hidden"/>`;
+  svg += series.map((s, k) => `<circle class="hd" data-k="${k}" r="4.5" fill="${s.color}" stroke="var(--surface-1)" stroke-width="2" visibility="hidden"/>`).join('');
+  svg += `<rect x="${f.m.l}" y="${f.m.t}" width="${f.iw}" height="${f.ih}" fill="transparent" class="hit"/></svg>`;
+  el.innerHTML = svg;
+  const hit = el.querySelector('.hit'), xh = el.querySelector('#xh'), dots = el.querySelectorAll('.hd'), svgEl = el.querySelector('svg');
+  const move = (ev) => {
+    const p = svgEl.getBoundingClientRect(), sx = (ev.clientX - p.left) * (f.W / p.width);
+    const i = Math.max(0, Math.min(rows.length - 1, Math.round(((sx - f.m.l) / f.iw) * (rows.length - 1))));
+    const x = X(i);
+    xh.setAttribute('x1', x); xh.setAttribute('x2', x); xh.setAttribute('visibility', 'visible');
+    dots.forEach((d, k) => { d.setAttribute('cx', x); d.setAttribute('cy', Y(rows[i][series[k].key])); d.setAttribute('visibility', 'visible'); });
+    showTip(`<b>${shortDay(rows[i].day)}</b>` + series.map((s) => `<div class="row"><span><span class="sw" style="background:${s.color}"></span>${s.label}</span><span>${fmt(rows[i][s.key])}</span></div>`).join(''), ev.clientX, ev.clientY);
+  };
+  hit.addEventListener('pointermove', move);
+  hit.addEventListener('pointerleave', () => { xh.setAttribute('visibility', 'hidden'); dots.forEach((d) => d.setAttribute('visibility', 'hidden')); hideTip(); });
+}
+
+function barChart(el, rows, key, unit) {
+  const H = 230;
+  const max = niceMax(Math.max(1, ...rows.map((r) => r[key])));
+  const f = frame(el, rows, max, H);
+  const slot = f.iw / rows.length, bw = Math.max(2, Math.min(28, slot - 2));
+  let svg = f.svg;
+  rows.forEach((r, i) => {
+    const h = (f.ih * r[key]) / max, x = f.m.l + slot * i + (slot - bw) / 2, y = f.m.t + f.ih - h, rad = Math.min(4, bw / 2, h);
+    if (h > 0) svg += `<path d="M${x},${y + h}V${y + rad}Q${x},${y} ${x + rad},${y}H${x + bw - rad}Q${x + bw},${y} ${x + bw},${y + rad}V${y + h}Z" fill="var(--series-1)"/>`;
+    svg += `<rect class="bh" data-i="${i}" x="${f.m.l + slot * i}" y="${f.m.t}" width="${slot}" height="${f.ih}" fill="transparent"/>`;
+  });
+  el.innerHTML = svg + '</svg>';
+  el.querySelectorAll('.bh').forEach((b) => {
+    b.addEventListener('pointermove', (ev) => { const r = rows[b.dataset.i]; showTip(`<b>${shortDay(r.day)}</b><div class="row"><span>${unit}</span><span>${fmt(r[key])}</span></div>`, ev.clientX, ev.clientY); });
+    b.addEventListener('pointerleave', hideTip);
+  });
+}
+
+addEventListener('resize', () => { if (data) render(); });
+load();
+</script>
+</body>
+</html>

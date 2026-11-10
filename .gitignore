@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+dist/
+.wrangler/
+.dev.vars
+.admin-key
+.ip-salt
+trailer/*.mp4

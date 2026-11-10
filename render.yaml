@@ -1,0 +1,9 @@
+# One-click hosting on Render.com: New + > Blueprint > pick this repo.
+services:
+  - type: web
+    name: boomboats
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: node server.js
+    healthCheckPath: /health

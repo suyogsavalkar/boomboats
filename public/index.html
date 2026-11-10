@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#071d31" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <title>Boomboats</title>
+  <meta name="description" content="Boomboats — a multiplayer speedboat battle game. Grab weapons, hide behind rocks, blast your friends." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%9A%A4%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/style.css" />
+  <script type="importmap">
+    { "imports": { "three": "/vendor/three/build/three.module.js", "three/addons/": "/vendor/three/examples/jsm/" } }
+  </script>
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <!-- loading -->
+  <div id="loading" class="screen">
+    <div class="logo">BOOM<span>BOATS</span></div>
+    <div class="bar"><div id="loadbar"></div></div>
+    <div id="loadtext">Loading boats…</div>
+  </div>
+
+  <!-- main menu -->
+  <div id="menu" class="screen hidden">
+    <div class="menu-left">
+      <div class="logo">BOOM<span>BOATS</span></div>
+      <div class="tagline">Grab weapons. Blast boats. Rule the lagoon.</div>
+      <label class="field">
+        <span>Captain name</span>
+        <input id="name" maxlength="16" placeholder="Your name" autocomplete="off" spellcheck="false" />
+      </label>
+      <button id="btn-play" class="btn big">PLAY</button>
+      <div class="row">
+        <button id="btn-create" class="btn alt">Create private room</button>
+        <button id="btn-help" class="btn alt">How to play</button>
+      </div>
+      <div class="row join">
+        <input id="code" maxlength="5" placeholder="ROOM CODE" autocomplete="off" spellcheck="false" />
+        <button id="btn-join" class="btn alt">Join</button>
+      </div>
+      <div id="menu-error" class="error"></div>
+      <div class="controls-help">
+        <b>W A S D</b> / arrows drive · <b>Space</b> or click fires · <b>Tab</b> scores · <b>M</b> mute
+      </div>
+    </div>
+    <div class="menu-right">
+      <div class="picker">
+        <button class="arrow" id="boat-prev">‹</button>
+        <div class="picker-label"><small>BOAT</small><span id="boat-name">Bluefin</span></div>
+        <button class="arrow" id="boat-next">›</button>
+      </div>
+      <div class="picker">
+        <button class="arrow" id="char-prev">‹</button>
+        <div class="picker-label"><small>DRIVER</small><span id="char-name">Male A</span></div>
+        <button class="arrow" id="char-next">›</button>
+      </div>
+    </div>
+    <div class="credits">3D models &amp; effects: Kenney.nl (CC0) · Explosion sounds by qubodup (Iwan Gabovitch), CC-BY 3.0 · Music “Awake!” by cynicmusic (CC0) · <a href="/audio/CREDITS.txt" target="_blank" style="color:inherit">all sound credits</a> · The game keeps simple stats (visits, player names, time played) to improve it.</div>
+  </div>
+
+  <!-- in-game HUD -->
+  <div id="hud" class="hidden">
+    <div id="roominfo"><span id="roomcode"></span><button id="btn-copy" class="chip">Copy invite link</button><button id="btn-exit" class="chip exit" title="Leave the room (Esc)">Exit</button></div>
+    <div id="timer">3:00</div>
+    <div id="board"></div>
+    <div id="feed"></div>
+    <canvas id="minimap" width="180" height="180"></canvas>
+    <div id="aim-status"></div>
+    <div id="guide" class="hidden">
+      <svg id="guide-arrow" viewBox="0 0 64 64"><path d="M32 4 L56 40 H41 V60 H23 V40 H8 Z" fill="#ffcf33" stroke="#5c3300" stroke-width="4" stroke-linejoin="round"/></svg>
+      <div id="guide-text"></div>
+    </div>
+    <div id="weapon" class="empty">
+      <div id="weapon-icon"></div>
+      <div id="weapon-info">
+        <div id="weapon-tier"></div>
+        <div id="weapon-name">No weapon</div>
+        <div id="weapon-how"></div>
+        <div id="weapon-ammo"></div>
+      </div>
+      <div id="weapon-key">SPACE</div>
+    </div>
+    <div id="pickup-card" class="hidden">
+      <div class="pc-label">YOU GOT</div>
+      <div id="pc-icon"></div>
+      <div id="pc-name"></div>
+      <div id="pc-tier"></div>
+      <div id="pc-how"></div>
+    </div>
+    <div id="hint"></div>
+    <div id="center-msg"></div>
+    <div id="protect" class="hidden"></div>
+    <div id="dead" class="hidden">
+      <div class="dead-top"><div class="big-title">SUNK!</div><div id="dead-by"></div></div>
+      <div id="dead-watch"></div>
+      <button id="btn-revive" class="btn big" disabled>REVIVE IN 5</button>
+    </div>
+    <button id="btn-mute" class="chip icon" title="Mute (M)">🔊</button>
+    <div id="exit-confirm" class="hidden">
+      <div class="ec-card">
+        <div class="ec-title">Leave this match?</div>
+        <div class="ec-sub">Your score in this room will be lost.</div>
+        <div class="row"><button id="btn-exit-stay" class="btn alt">Stay</button><button id="btn-exit-leave" class="btn leave">Leave</button></div>
+      </div>
+    </div>
+    <div id="touch" class="hidden">
+      <div id="stick"><div id="knob"></div></div>
+      <button id="touch-fire">FIRE</button>
+    </div>
+  </div>
+
+  <!-- phones: play sideways -->
+  <div id="rotate">
+    <svg viewBox="0 0 64 64" width="96" height="96"><rect x="20" y="6" width="24" height="44" rx="5" fill="none" stroke="#ffcf33" stroke-width="4"/><circle cx="32" cy="44" r="2.5" fill="#ffcf33"/><path d="M10 40 a24 24 0 0 0 20 18" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M28 52 l3 6 -6 2" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="big-title small">TURN YOUR PHONE</div>
+    <div>Boomboats is played sideways.</div>
+  </div>
+
+  <!-- how to play -->
+  <div id="help" class="screen hidden">
+    <div class="help-card" role="dialog" aria-labelledby="help-title">
+      <div class="help-head">
+        <div id="help-title" class="big-title small">HOW TO PLAY</div>
+        <button id="btn-help-x" class="help-x" aria-label="Close">✕</button>
+      </div>
+      <div class="help-body">
+        <ol class="steps">
+          <li><b>Drive</b> with <span class="kb"><kbd>W A S D</kbd> or the arrow keys</span><span class="tc">the joystick (bottom left)</span>.</li>
+          <li><b>Grab a weapon</b> by driving through one. The coloured circle shows how strong it is, and the yellow arrow points to the nearest one.</li>
+          <li><b>Aim</b> at a boat: a <span class="red">red target</span> means your shot will hit.</li>
+          <li><b>Fire</b> with <span class="kb"><kbd>SPACE</kbd> or a click</span><span class="tc">the FIRE button (bottom right)</span>. One tap fires the whole weapon, so keep pointing at your target.</li>
+          <li><b>Hide</b> behind rocks and walls. They block every shot.</li>
+          <li><b>Sunk?</b> Tap <b>REVIVE</b> after 5 seconds. You get 4 seconds of protection.</li>
+          <li>Most boats sunk in 3 minutes wins.</li>
+        </ol>
+        <div class="help-weapons-wrap">
+          <div class="help-sub">WEAPONS</div>
+          <div id="help-weapons"></div>
+        </div>
+      </div>
+      <button id="btn-help-close" class="btn big">GOT IT</button>
+    </div>
+  </div>
+
+  <!-- end of match -->
+  <div id="results" class="screen hidden">
+    <div class="big-title">MATCH OVER</div>
+    <div id="podium"></div>
+    <div id="results-list"></div>
+    <div id="results-next"></div>
+  </div>
+
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>

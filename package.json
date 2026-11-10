@@ -1,0 +1,24 @@
+{
+  "name": "boomboats",
+  "version": "1.0.0",
+  "description": "Boomboats - multiplayer speedboat battle game",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build:cf": "node scripts/build-cf.mjs",
+    "dev:cf": "npm run build:cf && wrangler dev",
+    "deploy": "npm run build:cf && wrangler deploy"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "three": "^0.170.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.159.0"
+  }
+}
